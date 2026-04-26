@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lofi Sapporo Beats — チャンネル管理</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0f14;
+  --bg2: #13161e;
+  --bg3: #1a1e28;
+  --border: #2a2f3d;
+  --accent: #7eb8f7;
+  --accent2: #b48ef7;
+  --accent3: #7ef7c8;
+  --warn: #f7c97e;
+  --danger: #f77e7e;
+  --text: #e8ecf4;
+  --muted: #6b7694;
+  --dim: #3a3f54;
+  --font-jp: 'Zen Kaku Gothic New', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-jp);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* NAV */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 24px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+.nav-brand {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent);
+  white-space: nowrap;
+  padding: 16px 20px 16px 0;
+  margin-right: 20px;
+  border-right: 1px solid var(--border);
+  letter-spacing: 0.05em;
+}
+.nav-tab {
+  font-size: 13px;
+  color: var(--muted);
+  padding: 18px 16px;
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  font-family: var(--font-jp);
+}
+.nav-tab:hover { color: var(--text); }
+.nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* MAIN */
+.main { max-width: 1100px; margin: 0 auto; padding: 28px 20px 60px; }
+
+/* PANELS */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* PAGE HEADER */
+.page-header { margin-bottom: 24px; }
+.page-title { font-size: 20px; font-weight: 700; color: var(--text); }
+.page-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+/* CARDS */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+/* GRID */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+@media(max-width:700px){
+  .grid-2,.grid-3,.grid-4 { grid-template-columns:1fr; }
+}
+
+/* STAT CARDS */
+.stat { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+.stat-val { font-family: var(--font-mono); font-size: 28px; font-weight: 700; color: var(--accent); }
+.stat-lab { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+/* BUTTONS */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-jp); font-size: 13px; font-weight: 700;
+  padding: 8px 16px; border-radius: 6px; cursor: pointer;
+  border: none; transition: opacity 0.15s, transform 0.1s;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--accent); color: #0d0f14; }
+.btn-secondary { background: var(--bg3); color: var(--text); border: 1px solid var(--border); }
+.btn-danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); font-size:12px; padding:4px 10px;}
+.btn-sm { font-size:12px; padding:5px 12px; }
+.btn:hover { opacity: 0.85; }
+
+/* FORM */
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 12px; color: var(--muted); margin-bottom: 5px; display: block; font-weight: 700; letter-spacing: 0.04em; }
+.form-input, .form-select, .form-textarea {
+  width: 100%; background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text); font-family: var(--font-jp); font-size: 14px;
+  padding: 9px 12px; border-radius: 6px; outline: none;
+  transition: border-color 0.2s;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+.form-textarea { resize: vertical; min-height: 80px; }
+.form-select option { background: var(--bg3); }
+
+/* TABLE */
+.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tbl th { font-size: 11px; color: var(--muted); font-weight: 700; letter-spacing: 0.06em; padding: 8px 12px; border-bottom: 1px solid var(--border); text-align: left; }
+.tbl td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.4; }
+.tbl tr:last-child td { border-bottom: none; }
+.tbl tr:hover td { background: var(--bg3); }
+
+/* BADGE */
+.badge {
+  display: inline-block; font-size: 11px; padding: 2px 8px;
+  border-radius: 99px; font-family: var(--font-mono);
+}
+.badge-blue { background: #1a2e44; color: var(--accent); }
+.badge-purple { background: #21183a; color: var(--accent2); }
+.badge-green { background: #132b24; color: var(--accent3); }
+.badge-warn { background: #2e2414; color: var(--warn); }
+.badge-red { background: #2b1414; color: var(--danger); }
+
+/* MODAL */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7); z-index: 100;
+  align-items: center; justify-content: center; padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 24px; width: 100%; max-width: 600px;
+  max-height: 90vh; overflow-y: auto;
+}
+.modal-title { font-size: 16px; font-weight: 700; margin-bottom: 20px; color: var(--accent); }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+/* TAGS */
+.tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
+.tag {
+  font-size: 11px; padding: 2px 8px; border-radius: 99px;
+  background: var(--bg3); border: 1px solid var(--border); color: var(--muted);
+}
+
+/* CALENDAR */
+.cal-grid {
+  display: grid; grid-template-columns: repeat(7,1fr); gap: 4px;
+}
+.cal-header { font-size: 11px; color: var(--muted); text-align: center; padding: 6px 0; }
+.cal-day {
+  min-height: 64px; background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 6px; padding: 6px; cursor: pointer;
+  transition: border-color 0.15s;
+}
+.cal-day:hover { border-color: var(--dim); }
+.cal-day.today { border-color: var(--accent); }
+.cal-day.has-post { border-color: var(--accent3); }
+.cal-day-num { font-size: 11px; color: var(--muted); font-family: var(--font-mono); }
+.cal-day.today .cal-day-num { color: var(--accent); font-weight: 700; }
+.cal-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent3); margin-top: 4px; }
+.cal-post-label { font-size: 10px; color: var(--accent3); margin-top: 3px; line-height: 1.3; word-break: break-all; }
+.cal-empty { background: transparent; border: none; }
+
+/* SUNO CARD */
+.suno-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 16px; margin-bottom: 12px;
+}
+.suno-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.suno-title { font-size: 14px; font-weight: 700; }
+.suno-prompt { font-family: var(--font-mono); font-size: 12px; color: var(--muted); background: var(--bg); padding: 10px; border-radius: 6px; word-break: break-all; line-height: 1.6; }
+.copy-btn { font-size: 11px; color: var(--accent); cursor: pointer; background: none; border: none; font-family: var(--font-jp); padding: 2px 6px; }
+.copy-btn:hover { text-decoration: underline; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 3px; }
+
+/* SECTION DIVIDER */
+.section-divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+/* MONO TEXT */
+.mono { font-family: var(--font-mono); }
+
+/* COPY SUCCESS */
+.copy-toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--accent3); color: #0d0f14;
+  font-size: 13px; font-weight: 700;
+  padding: 10px 18px; border-radius: 8px;
+  opacity: 0; transition: opacity 0.3s;
+  pointer-events: none; z-index: 200;
+}
+.copy-toast.show { opacity: 1; }
+
+.row { display: flex; gap: 12px; align-items: center; }
+.spacer { flex: 1; }
+.mt8 { margin-top: 8px; }
+.mt16 { margin-top: 16px; }
+.mt24 { margin-top: 24px; }
+.mb16 { margin-bottom: 16px; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand">🎵 LSB</div>
+  <button class="nav-tab active" onclick="switchTab('dashboard')">ダッシュボード</button>
+  <button class="nav-tab" onclick="switchTab('videos')">動画管理</button>
+  <button class="nav-tab" onclick="switchTab('calendar')">投稿カレンダー</button>
+  <button class="nav-tab" onclick="switchTab('suno')">SUNOプロンプト</button>
+  <button class="nav-tab" onclick="switchTab('playlists')">再生リスト</button>
+  <button class="nav-tab" onclick="switchTab('analytics')">アナリティクス</button>
+</nav>
+
+<div class="main">
+
+<!-- ===== DASHBOARD ===== -->
+<div id="panel-dashboard" class="panel active">
+  <div class="page-header">
+    <div class="page-title">Lofi Sapporo Beats — 運営ダッシュボード</div>
+    <div class="page-sub">@LofiSapporoBeats</div>
+  </div>
+  <div class="grid-4 mb16" id="dash-stats"></div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="form-label" style="margin-bottom:12px">直近の投稿予定</div>
+      <div id="dash-upcoming" style="font-size:13px;color:var(--muted)">読み込み中…</div>
+    </div>
+    <div class="card">
+      <div class="form-label" style="margin-bottom:12px">視聴回数 TOP3</div>
+      <div id="dash-top3" style="font-size:13px;color:var(--muted)">読み込み中…</div>
+    </div>
+  </div>
+  <div class="card mt16">
+    <div class="form-label" style="margin-bottom:12px">今週のタスク</div>
+    <div id="dash-tasks"></div>
+    <div class="row mt8">
+      <input class="form-input" id="new-task-input" placeholder="タスクを追加…" style="flex:1" onkeydown="if(event.key==='Enter')addTask()">
+      <button class="btn btn-primary btn-sm" onclick="addTask()">追加</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== VIDEOS ===== -->
+<div id="panel-videos" class="panel">
+  <div class="page-header row">
+    <div>
+      <div class="page-title">動画管理</div>
+      <div class="page-sub">タイトル・説明文・タグを一元管理</div>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" onclick="openVideoModal()">＋ 動画を追加</button>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="tbl" id="videos-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>タイトル</th>
+          <th>尺</th>
+          <th>視聴回数</th>
+          <th>ステータス</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="videos-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== CALENDAR ===== -->
+<div id="panel-calendar" class="panel">
+  <div class="page-header row">
+    <div>
+      <div class="page-title" id="cal-month-label">投稿カレンダー</div>
+      <div class="page-sub">週1本ペースを目標に</div>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn btn-secondary btn-sm" onclick="calPrev()">◀</button>
+    <button class="btn btn-secondary btn-sm" onclick="calNext()">▶</button>
+    <button class="btn btn-primary btn-sm" onclick="openScheduleModal()">＋ 予定を追加</button>
+  </div>
+  <div class="card">
+    <div class="cal-grid" id="cal-weekdays"></div>
+    <div class="cal-grid mt8" id="cal-days"></div>
+  </div>
+  <div class="card mt16">
+    <div class="form-label" style="margin-bottom:12px">今月の投稿予定一覧</div>
+    <div id="schedule-list" style="font-size:13px"></div>
+  </div>
+</div>
+
+<!-- ===== SUNO ===== -->
+<div id="panel-suno" class="panel">
+  <div class="page-header row">
+    <div>
+      <div class="page-title">SUNOプロンプト管理</div>
+      <div class="page-sub">生成に使ったプロンプトを保存・再利用</div>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" onclick="openSunoModal()">＋ プロンプトを保存</button>
+  </div>
+  <div id="suno-list"></div>
+</div>
+
+<!-- ===== PLAYLISTS ===== -->
+<div id="panel-playlists" class="panel">
+  <div class="page-header row">
+    <div>
+      <div class="page-title">再生リスト整理</div>
+      <div class="page-sub">動画をテーマ別に分類</div>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" onclick="openPlaylistModal()">＋ リストを作成</button>
+  </div>
+  <div id="playlist-grid" class="grid-2"></div>
+</div>
+
+<!-- ===== ANALYTICS ===== -->
+<div id="panel-analytics" class="panel">
+  <div class="page-header row">
+    <div>
+      <div class="page-title">アナリティクスメモ</div>
+      <div class="page-sub">視聴回数・登録者数を手動記録</div>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" onclick="openAnalyticsModal()">＋ 記録を追加</button>
+  </div>
+  <div class="grid-4 mb16" id="analytics-stats"></div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="tbl">
+      <thead>
+        <tr><th>記録日</th><th>登録者数</th><th>総視聴回数</th><th>メモ</th><th>操作</th></tr>
+      </thead>
+      <tbody id="analytics-body"></tbody>
+    </table>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- ===== MODALS ===== -->
+
+<!-- VIDEO MODAL -->
+<div class="modal-overlay" id="video-modal">
+  <div class="modal">
+    <div class="modal-title" id="video-modal-title">動画を追加</div>
+    <input type="hidden" id="vm-id">
+    <div class="grid-2">
+      <div class="form-group" style="grid-column:1/-1">
+        <label class="form-label">タイトル（YouTube用）</label>
+        <input class="form-input" id="vm-title" placeholder="【作業用BGM】夜景ローファイ｜集中・勉強に">
+      </div>
+      <div class="form-group">
+        <label class="form-label">動画の尺</label>
+        <input class="form-input" id="vm-duration" placeholder="1:43:01">
+      </div>
+      <div class="form-group">
+        <label class="form-label">視聴回数</label>
+        <input class="form-input" id="vm-views" type="number" placeholder="0">
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label class="form-label">説明文（冒頭3行が重要）</label>
+        <textarea class="form-textarea" id="vm-desc" style="min-height:100px" placeholder="🌃 夜景ローファイBGM｜集中・勉強・深夜作業に..."></textarea>
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label class="form-label">タグ（カンマ区切り）</label>
+        <input class="form-input" id="vm-tags" placeholder="#作業用BGM, #ローファイ, #lofi, #勉強BGM">
+      </div>
+      <div class="form-group">
+        <label class="form-label">ステータス</label>
+        <select class="form-select" id="vm-status">
+          <option value="published">公開済み</option>
+          <option value="scheduled">予約投稿</option>
+          <option value="draft">下書き</option>
+          <option value="idea">アイデア</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">YouTube URL（任意）</label>
+        <input class="form-input" id="vm-url" placeholder="https://youtube.com/watch?v=...">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('video-modal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="saveVideo()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCHEDULE MODAL -->
+<div class="modal-overlay" id="schedule-modal">
+  <div class="modal">
+    <div class="modal-title">投稿予定を追加</div>
+    <input type="hidden" id="sm-id">
+    <div class="form-group">
+      <label class="form-label">日付</label>
+      <input class="form-input" id="sm-date" type="date">
+    </div>
+    <div class="form-group">
+      <label class="form-label">動画タイトル / 内容メモ</label>
+      <input class="form-input" id="sm-title" placeholder="深夜カフェ ローファイ BGM">
+    </div>
+    <div class="form-group">
+      <label class="form-label">ステータス</label>
+      <select class="form-select" id="sm-status">
+        <option value="planned">予定</option>
+        <option value="done">完了</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('schedule-modal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="saveSchedule()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUNO MODAL -->
+<div class="modal-overlay" id="suno-modal">
+  <div class="modal">
+    <div class="modal-title">SUNOプロンプトを保存</div>
+    <input type="hidden" id="sunom-id">
+    <div class="form-group">
+      <label class="form-label">プロンプト名（管理用）</label>
+      <input class="form-input" id="sunom-name" placeholder="深夜カフェ・チルビート">
+    </div>
+    <div class="form-group">
+      <label class="form-label">スタイルプロンプト</label>
+      <textarea class="form-textarea" id="sunom-style" placeholder="lo-fi hip hop, chill, late night city, warm piano, vinyl crackle, slow drums, 75 bpm"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">歌詞プロンプト / テーマ</label>
+      <textarea class="form-textarea" id="sunom-lyrics" placeholder="instrumental, no vocals, ambient city sounds, rain, cozy atmosphere"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">評価</label>
+      <select class="form-select" id="sunom-rating">
+        <option value="★★★">★★★ 最高</option>
+        <option value="★★☆">★★☆ 良い</option>
+        <option value="★☆☆">★☆☆ 普通</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">メモ</label>
+      <input class="form-input" id="sunom-memo" placeholder="この設定はピアノが綺麗に出る">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('suno-modal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="saveSuno()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- PLAYLIST MODAL -->
+<div class="modal-overlay" id="playlist-modal">
+  <div class="modal">
+    <div class="modal-title">再生リストを作成</div>
+    <input type="hidden" id="plm-id">
+    <div class="form-group">
+      <label class="form-label">リスト名</label>
+      <input class="form-input" id="plm-name" placeholder="深夜作業用 ローファイBGM">
+    </div>
+    <div class="form-group">
+      <label class="form-label">説明</label>
+      <input class="form-input" id="plm-desc" placeholder="夜の作業・勉強・残業のお供に">
+    </div>
+    <div class="form-group">
+      <label class="form-label">収録動画（タイトルを改行区切りで）</label>
+      <textarea class="form-textarea" id="plm-videos" placeholder="夕暮れの夜景ローファイ&#10;バルコニーから見る夜景&#10;静かな夜の勉強ローファイ"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('playlist-modal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="savePlaylist()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ANALYTICS MODAL -->
+<div class="modal-overlay" id="analytics-modal">
+  <div class="modal">
+    <div class="modal-title">アナリティクスを記録</div>
+    <div class="form-group">
+      <label class="form-label">記録日</label>
+      <input class="form-input" id="am-date" type="date">
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">登録者数</label>
+        <input class="form-input" id="am-subs" type="number" placeholder="2">
+      </div>
+      <div class="form-group">
+        <label class="form-label">総視聴回数</label>
+        <input class="form-input" id="am-views" type="number" placeholder="420">
+      </div>
+      <div class="form-group">
+        <label class="form-label">総再生時間（時間）</label>
+        <input class="form-input" id="am-hours" type="number" step="0.1" placeholder="12.5">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">メモ（何かあれば）</label>
+      <input class="form-input" id="am-memo" placeholder="タイトル改善後の変化など">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('analytics-modal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="saveAnalytics()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIDEO DETAIL MODAL -->
+<div class="modal-overlay" id="detail-modal">
+  <div class="modal" style="max-width:700px">
+    <div class="modal-title" id="detail-title"></div>
+    <div class="form-label" style="margin-bottom:6px">説明文（コピー用）</div>
+    <div class="suno-prompt" id="detail-desc" style="min-height:80px"></div>
+    <button class="copy-btn mt8" onclick="copyText('detail-desc')">コピー</button>
+    <hr class="section-divider">
+    <div class="form-label" style="margin-bottom:6px">タグ</div>
+    <div class="tags" id="detail-tags"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('detail-modal')">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<div class="copy-toast" id="copy-toast">コピーしました！</div>
+
+<script>
+// ===== STORAGE =====
+const S = {
+  get: k => { try { return JSON.parse(localStorage.getItem('lsb_'+k)||'null'); } catch(e){ return null; } },
+  set: (k,v) => localStorage.setItem('lsb_'+k, JSON.stringify(v)),
+};
+
+// ===== SEED DATA =====
+function seedIfEmpty() {
+  if (!S.get('videos')) {
+    S.set('videos', [
+      { id:1, title:'【作業用BGM】夕暮れの夜景ローファイ｜勉強・集中・残業のお供に【1時間43分】', duration:'1:43:01', views:40, status:'published', desc:'🌇 夕暮れの夜景ローファイBGM｜勉強・集中・残業に\n\n静かな夕暮れの都市をバックに流れる、穏やかなローファイBGMです。\n\n✅ こんな時に\n・勉強・テスト前\n・残業・在宅ワーク\n・集中したい夜の時間\n\n#作業用BGM #ローファイ #lofi #勉強BGM #集中BGM', tags:'#作業用BGM, #ローファイ, #lofi, #勉強BGM, #夕暮れ', url:'' },
+      { id:2, title:'【ローファイBGM】バルコニーから見る夜景｜深夜の作業・読書・集中用【2時間18分】', duration:'2:18:25', views:30, status:'published', desc:'🌃 バルコニーから見る夜景ローファイ｜深夜の作業・読書に\n\n#作業用BGM #ローファイ #lofi #深夜作業 #夜景BGM', tags:'#作業用BGM, #ローファイ, #深夜, #読書', url:'' },
+      { id:3, title:'夜景 lofi hip hop｜黄昏の都市で集中する作業用BGM｜勉強・仕事【2時間25分】', duration:'2:25:55', views:50, status:'published', desc:'🌆 夜景 lofi hip hop｜作業・勉強・仕事に\n\n#lofi #lofihiphop #作業用BGM #勉強BGM', tags:'#lofi, #lofihiphop, #夜景, #仕事', url:'' },
+      { id:4, title:'【深夜の作業用BGM】静かな夜の勉強ローファイ｜眠れない夜・夜更かしに【1時間44分】', duration:'1:44:19', views:36, status:'published', desc:'🌙 静かな夜の勉強ローファイ｜眠れない夜に\n\n#深夜 #眠れない夜 #作業用BGM', tags:'#深夜, #眠れない夜, #作業用BGM', url:'' },
+      { id:5, title:'高層ビルの夜景 ローファイBGM｜集中できる作業用音楽・テスト勉強に【1時間4分】', duration:'1:04:05', views:49, status:'published', desc:'🏙️ 高層ビルの夜景ローファイ｜テスト勉強・作業に\n\n#高層ビル #テスト勉強 #作業用BGM', tags:'#高層ビル, #テスト勉強, #集中できる', url:'' },
+      { id:6, title:'都市の夜のローファイ｜作業用BGM・資格勉強・レポートに集中したい人へ【2時間22分】', duration:'2:22:08', views:35, status:'published', desc:'🌃 都市の夜のローファイ｜資格勉強・レポートに\n\n#資格勉強 #レポート #作業用BGM', tags:'#資格勉強, #レポート, #都市の夜', url:'' },
+      { id:7, title:'【リラックスBGM】夜風のローファイ｜疲れた夜に・ゆっくり休む時間に【2時間49分】', duration:'2:49:07', views:32, status:'published', desc:'🍃 夜風のリラックスローファイ｜疲れた夜に\n\n#リラックスBGM #夜風 #疲れた夜', tags:'#リラックスBGM, #夜風, #疲れた夜', url:'' },
+      { id:8, title:'【作業用BGM】夜景カフェのローファイ｜集中したい時間に・勉強・仕事・深夜作業【1時間6分】', duration:'1:06:56', views:64, status:'published', desc:'☕ 夜景カフェのローファイBGM｜集中・勉強・深夜作業に\n\n静かな夜、窓の外に広がる都市の灯り。\nそんな空間で集中したい時のための、穏やかなローファイBGMです。\n\n✅ こんな時に聴いてください\n・勉強・テスト前の集中タイム\n・在宅ワーク・深夜の作業\n・読書・レポート・資格勉強\n・ぼーっとしたい夜のひとりの時間\n\n#作業用BGM #ローファイ #lofi #勉強BGM #集中BGM #深夜作業 #lofihiphop #chillbeats', tags:'#作業用BGM, #ローファイ, #lofi, #勉強BGM, #集中BGM, #深夜作業', url:'https://youtube.com/' },
+      { id:9, title:'今夜はゆっくり — 夜のリラックスローファイBGM｜入眠・読書・休息に【1時間2分】', duration:'1:02:52', views:36, status:'published', desc:'🌙 夜のリラックスローファイ｜入眠・読書・休息に\n\n#入眠BGM #読書 #リラックスBGM', tags:'#入眠BGM, #読書, #休息', url:'' },
+    ]);
+  }
+  if (!S.get('suno')) {
+    S.set('suno', [
+      { id:1, name:'深夜カフェ・チルビート', style:'lo-fi hip hop, late night cafe, warm piano, vinyl crackle, slow drums, 72 bpm, jazzy chords, cozy', lyrics:'instrumental, no vocals, soft rain outside window, warm interior, ambient city sounds', rating:'★★★', memo:'ピアノが綺麗に出る鉄板設定' },
+      { id:2, name:'夜景・集中用ドリームy', style:'lo-fi study beats, dreamy, city lights, soft synth pads, gentle kick, 80 bpm, melancholic', lyrics:'instrumental, no vocals, distant traffic, night atmosphere, focus music', rating:'★★☆', memo:'サビ部分が少し単調になりがち' },
+    ]);
+  }
+  if (!S.get('playlists')) {
+    S.set('playlists', [
+      { id:1, name:'深夜作業用 ローファイBGM', desc:'夜の作業・勉強・残業のお供に', videos:'夕暮れの夜景ローファイ\n静かな夜の勉強ローファイ\n夜景カフェのローファイ' },
+      { id:2, name:'勉強・集中用 BGM', desc:'テスト・資格・レポートに', videos:'バルコニーから見る夜景\n高層ビルの夜景ローファイ\n都市の夜のローファイ' },
+      { id:3, name:'リラックス・入眠用', desc:'疲れた夜・休息・読書に', videos:'夜風のローファイ\n今夜はゆっくり — 夜のリラックスローファイ' },
+    ]);
+  }
+  if (!S.get('schedules')) { S.set('schedules', []); }
+  if (!S.get('analytics')) {
+    S.set('analytics', [
+      { id:1, date:'2025-10-07', subs:2, views:420, hours:12.5, memo:'チャンネル開設当初のデータ' },
+    ]);
+  }
+  if (!S.get('tasks')) {
+    S.set('tasks', [
+      { id:1, text:'既存9本のタイトルを改善する', done:false },
+      { id:2, text:'「Focus in Peace」の説明文を書き直す', done:false },
+      { id:3, text:'再生リスト3本をYouTubeで作成する', done:false },
+      { id:4, text:'SUNOで新曲を生成する', done:false },
+      { id:5, text:'次の動画を投稿する', done:false },
+    ]);
+  }
+  if (!S.get('nextId')) { S.set('nextId', 100); }
+}
+
+function newId() {
+  let n = S.get('nextId') || 100;
+  S.set('nextId', n+1);
+  return n;
+}
+
+// ===== TAB =====
+function switchTab(name) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  event.target.classList.add('active');
+  render();
+}
+
+// ===== RENDER =====
+function render() {
+  renderDashboard();
+  renderVideos();
+  renderCalendar();
+  renderSuno();
+  renderPlaylists();
+  renderAnalytics();
+}
+
+function statusBadge(s) {
+  const map = { published:'badge-green', scheduled:'badge-blue', draft:'badge-warn', idea:'badge-purple' };
+  const label = { published:'公開済み', scheduled:'予約投稿', draft:'下書き', idea:'アイデア' };
+  return `<span class="badge ${map[s]||'badge-blue'}">${label[s]||s}</span>`;
+}
+
+// DASHBOARD
+function renderDashboard() {
+  const videos = S.get('videos')||[];
+  const schedules = S.get('schedules')||[];
+  const analytics = S.get('analytics')||[];
+  const tasks = S.get('tasks')||[];
+
+  const totalViews = videos.reduce((a,v)=>a+(+v.views||0),0);
+  const latest = analytics.length ? analytics[analytics.length-1] : null;
+  const subs = latest ? latest.subs : 2;
+  const hours = latest ? latest.hours : 0;
+
+  document.getElementById('dash-stats').innerHTML = `
+    <div class="stat"><div class="stat-val">${subs}</div><div class="stat-lab">登録者数</div></div>
+    <div class="stat"><div class="stat-val">${videos.length}</div><div class="stat-lab">投稿本数</div></div>
+    <div class="stat"><div class="stat-val">${totalViews}</div><div class="stat-lab">総視聴回数</div></div>
+    <div class="stat"><div class="stat-val">${(+hours).toFixed(1)}</div><div class="stat-lab">総再生時間(h)</div></div>
+  `;
+
+  const today = new Date();
+  const upcoming = schedules.filter(s=>new Date(s.date)>=today).sort((a,b)=>a.date>b.date?1:-1).slice(0,3);
+  document.getElementById('dash-upcoming').innerHTML = upcoming.length
+    ? upcoming.map(s=>`<div style="padding:6px 0;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center">
+        <span class="mono" style="font-size:12px;color:var(--muted)">${s.date}</span>
+        <span>${s.title}</span>
+        ${s.status==='done'?'<span class="badge badge-green">完了</span>':'<span class="badge badge-warn">予定</span>'}
+      </div>`).join('')
+    : '<div style="color:var(--muted)">投稿予定なし — カレンダーから追加しましょう</div>';
+
+  const top3 = [...videos].sort((a,b)=>(+b.views)-(+a.views)).slice(0,3);
+  document.getElementById('dash-top3').innerHTML = top3.map((v,i)=>`
+    <div style="padding:6px 0;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center">
+      <span class="mono" style="font-size:12px;color:var(--muted)">${i+1}</span>
+      <span style="flex:1;font-size:12px">${v.title.substring(0,36)}…</span>
+      <span class="badge badge-blue">${v.views}回</span>
+    </div>`).join('');
+
+  const taskHtml = tasks.map(t=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+      <input type="checkbox" ${t.done?'checked':''} onchange="toggleTask(${t.id})" style="cursor:pointer;accent-color:var(--accent3)">
+      <span style="font-size:13px;${t.done?'color:var(--muted);text-decoration:line-through':'color:var(--text)'}">${t.text}</span>
+      <div class="spacer"></div>
+      <button class="btn-danger btn" onclick="deleteTask(${t.id})">削除</button>
+    </div>`).join('');
+  document.getElementById('dash-tasks').innerHTML = taskHtml;
+}
+
+function addTask() {
+  const inp = document.getElementById('new-task-input');
+  const text = inp.value.trim();
+  if (!text) return;
+  const tasks = S.get('tasks')||[];
+  tasks.push({ id:newId(), text, done:false });
+  S.set('tasks', tasks);
+  inp.value = '';
+  renderDashboard();
+}
+function toggleTask(id) {
+  const tasks = S.get('tasks')||[];
+  const t = tasks.find(t=>t.id===id);
+  if (t) t.done = !t.done;
+  S.set('tasks', tasks);
+  renderDashboard();
+}
+function deleteTask(id) {
+  S.set('tasks', (S.get('tasks')||[]).filter(t=>t.id!==id));
+  renderDashboard();
+}
+
+// VIDEOS
+function renderVideos() {
+  const videos = S.get('videos')||[];
+  document.getElementById('videos-body').innerHTML = videos.map((v,i)=>`
+    <tr>
+      <td class="mono" style="color:var(--muted)">${i+1}</td>
+      <td style="max-width:320px">
+        <div style="font-size:13px;line-height:1.4">${v.title}</div>
+        ${v.url?`<a href="${v.url}" style="font-size:11px;color:var(--accent);text-decoration:none" target="_blank">▶ YouTube</a>`:''}
+      </td>
+      <td class="mono" style="color:var(--muted);white-space:nowrap">${v.duration||'—'}</td>
+      <td class="mono" style="color:var(--accent)">${v.views||0}</td>
+      <td>${statusBadge(v.status)}</td>
+      <td style="white-space:nowrap;display:flex;gap:4px;flex-wrap:wrap">
+        <button class="btn btn-secondary btn-sm" onclick="showDetail(${v.id})">詳細</button>
+        <button class="btn btn-secondary btn-sm" onclick="openVideoModal(${v.id})">編集</button>
+        <button class="btn btn-danger btn" onclick="deleteVideo(${v.id})">削除</button>
+      </td>
+    </tr>`).join('');
+}
+
+function openVideoModal(id) {
+  document.getElementById('vm-id').value = id||'';
+  if (id) {
+    const v = (S.get('videos')||[]).find(v=>v.id===id);
+    if (!v) return;
+    document.getElementById('video-modal-title').textContent = '動画を編集';
+    document.getElementById('vm-title').value = v.title||'';
+    document.getElementById('vm-duration').value = v.duration||'';
+    document.getElementById('vm-views').value = v.views||0;
+    document.getElementById('vm-desc').value = v.desc||'';
+    document.getElementById('vm-tags').value = v.tags||'';
+    document.getElementById('vm-status').value = v.status||'published';
+    document.getElementById('vm-url').value = v.url||'';
+  } else {
+    document.getElementById('video-modal-title').textContent = '動画を追加';
+    ['vm-title','vm-duration','vm-desc','vm-tags','vm-url'].forEach(f=>document.getElementById(f).value='');
+    document.getElementById('vm-views').value=0;
+    document.getElementById('vm-status').value='published';
+  }
+  openModal('video-modal');
+}
+
+function saveVideo() {
+  const id = document.getElementById('vm-id').value;
+  const v = {
+    id: id ? +id : newId(),
+    title: document.getElementById('vm-title').value.trim(),
+    duration: document.getElementById('vm-duration').value.trim(),
+    views: +document.getElementById('vm-views').value||0,
+    desc: document.getElementById('vm-desc').value.trim(),
+    tags: document.getElementById('vm-tags').value.trim(),
+    status: document.getElementById('vm-status').value,
+    url: document.getElementById('vm-url').value.trim(),
+  };
+  const videos = S.get('videos')||[];
+  if (id) {
+    const idx = videos.findIndex(x=>x.id===+id);
+    if (idx>=0) videos[idx]=v;
+  } else {
+    videos.push(v);
+  }
+  S.set('videos', videos);
+  closeModal('video-modal');
+  render();
+}
+
+function deleteVideo(id) {
+  if (!confirm('この動画を削除しますか？')) return;
+  S.set('videos', (S.get('videos')||[]).filter(v=>v.id!==id));
+  render();
+}
+
+function showDetail(id) {
+  const v = (S.get('videos')||[]).find(v=>v.id===id);
+  if (!v) return;
+  document.getElementById('detail-title').textContent = v.title;
+  document.getElementById('detail-desc').textContent = v.desc||'（説明文未設定）';
+  const tags = (v.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
+  document.getElementById('detail-tags').innerHTML = tags.map(t=>`<span class="tag">${t}</span>`).join('');
+  openModal('detail-modal');
+}
+
+// CALENDAR
+let calYear, calMonth;
+function initCal() {
+  const now = new Date();
+  calYear = now.getFullYear();
+  calMonth = now.getMonth();
+}
+function calPrev() { calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); }
+function calNext() { calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalendar(); }
+
+function renderCalendar() {
+  if (calYear===undefined) initCal();
+  const months = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  document.getElementById('cal-month-label').textContent = `投稿カレンダー — ${calYear}年 ${months[calMonth]}`;
+
+  const days = ['日','月','火','水','木','金','土'];
+  document.getElementById('cal-weekdays').innerHTML = days.map(d=>`<div class="cal-header">${d}</div>`).join('');
+
+  const first = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+  const today = new Date();
+  const schedules = S.get('schedules')||[];
+
+  const pad = t => String(t).padStart(2,'0');
+  let html = '';
+  for (let i=0;i<first;i++) html+=`<div class="cal-empty"></div>`;
+  for (let d=1;d<=daysInMonth;d++) {
+    const dateStr = `${calYear}-${pad(calMonth+1)}-${pad(d)}`;
+    const isToday = today.getFullYear()===calYear && today.getMonth()===calMonth && today.getDate()===d;
+    const posts = schedules.filter(s=>s.date===dateStr);
+    html += `<div class="cal-day ${isToday?'today':''} ${posts.length?'has-post':''}" onclick="quickAddSchedule('${dateStr}')">
+      <div class="cal-day-num">${d}</div>
+      ${posts.map(p=>`<div class="cal-post-label">${p.title.substring(0,12)}</div>`).join('')}
+    </div>`;
+  }
+  document.getElementById('cal-days').innerHTML = html;
+
+  const monthSchedules = schedules.filter(s=>s.date.startsWith(`${calYear}-${pad(calMonth+1)}`)).sort((a,b)=>a.date>b.date?1:-1);
+  document.getElementById('schedule-list').innerHTML = monthSchedules.length
+    ? monthSchedules.map(s=>`<div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
+        <span class="mono" style="font-size:12px;color:var(--muted)">${s.date}</span>
+        <span style="flex:1;font-size:13px">${s.title}</span>
+        ${s.status==='done'?'<span class="badge badge-green">完了</span>':'<span class="badge badge-warn">予定</span>'}
+        <button class="btn btn-danger btn" onclick="deleteSchedule(${s.id})">削除</button>
+      </div>`).join('')
+    : '<div style="color:var(--muted)">この月の予定なし</div>';
+}
+
+function quickAddSchedule(date) {
+  document.getElementById('sm-date').value = date;
+  document.getElementById('sm-title').value = '';
+  document.getElementById('sm-status').value = 'planned';
+  document.getElementById('sm-id').value = '';
+  openModal('schedule-modal');
+}
+function openScheduleModal() {
+  document.getElementById('sm-date').value = '';
+  document.getElementById('sm-title').value = '';
+  document.getElementById('sm-status').value = 'planned';
+  document.getElementById('sm-id').value = '';
+  openModal('schedule-modal');
+}
+function saveSchedule() {
+  const id = document.getElementById('sm-id').value;
+  const s = {
+    id: id ? +id : newId(),
+    date: document.getElementById('sm-date').value,
+    title: document.getElementById('sm-title').value.trim(),
+    status: document.getElementById('sm-status').value,
+  };
+  if (!s.date||!s.title) { alert('日付とタイトルを入力してください'); return; }
+  const schedules = S.get('schedules')||[];
+  if (id) { const idx=schedules.findIndex(x=>x.id===+id); if(idx>=0)schedules[idx]=s; }
+  else schedules.push(s);
+  S.set('schedules', schedules);
+  closeModal('schedule-modal');
+  renderCalendar();
+  renderDashboard();
+}
+function deleteSchedule(id) {
+  S.set('schedules', (S.get('schedules')||[]).filter(s=>s.id!==id));
+  renderCalendar();
+  renderDashboard();
+}
+
+// SUNO
+function renderSuno() {
+  const list = S.get('suno')||[];
+  const ratingMap = {'★★★':'badge-green','★★☆':'badge-blue','★☆☆':'badge-warn'};
+  document.getElementById('suno-list').innerHTML = list.length
+    ? list.map(s=>`<div class="suno-card">
+        <div class="suno-card-header">
+          <div>
+            <div class="suno-title">${s.name}</div>
+            <div style="margin-top:4px;display:flex;gap:6px;align-items:center">
+              <span class="badge ${ratingMap[s.rating]||'badge-blue'}">${s.rating}</span>
+              ${s.memo?`<span style="font-size:12px;color:var(--muted)">${s.memo}</span>`:''}
+            </div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-secondary btn-sm" onclick="openSunoModal(${s.id})">編集</button>
+            <button class="btn btn-danger btn" onclick="deleteSuno(${s.id})">削除</button>
+          </div>
+        </div>
+        <div class="form-label" style="margin-bottom:4px">スタイル</div>
+        <div class="suno-prompt">${s.style}</div>
+        <button class="copy-btn" onclick="copyText('','${escQ(s.style)}')">コピー</button>
+        <div class="form-label mt8" style="margin-bottom:4px">歌詞/テーマ</div>
+        <div class="suno-prompt">${s.lyrics}</div>
+        <button class="copy-btn" onclick="copyText('','${escQ(s.lyrics)}')">コピー</button>
+      </div>`).join('')
+    : '<div style="color:var(--muted);padding:20px">プロンプトがまだありません。追加しましょう！</div>';
+}
+
+function openSunoModal(id) {
+  if (id) {
+    const s = (S.get('suno')||[]).find(s=>s.id===id);
+    if (!s) return;
+    document.getElementById('sunom-id').value = id;
+    document.getElementById('sunom-name').value = s.name||'';
+    document.getElementById('sunom-style').value = s.style||'';
+    document.getElementById('sunom-lyrics').value = s.lyrics||'';
+    document.getElementById('sunom-rating').value = s.rating||'★★★';
+    document.getElementById('sunom-memo').value = s.memo||'';
+  } else {
+    document.getElementById('sunom-id').value='';
+    ['sunom-name','sunom-style','sunom-lyrics','sunom-memo'].forEach(f=>document.getElementById(f).value='');
+    document.getElementById('sunom-rating').value='★★★';
+  }
+  openModal('suno-modal');
+}
+function saveSuno() {
+  const id = document.getElementById('sunom-id').value;
+  const s = {
+    id: id ? +id : newId(),
+    name: document.getElementById('sunom-name').value.trim(),
+    style: document.getElementById('sunom-style').value.trim(),
+    lyrics: document.getElementById('sunom-lyrics').value.trim(),
+    rating: document.getElementById('sunom-rating').value,
+    memo: document.getElementById('sunom-memo').value.trim(),
+  };
+  const list = S.get('suno')||[];
+  if (id) { const idx=list.findIndex(x=>x.id===+id); if(idx>=0)list[idx]=s; }
+  else list.push(s);
+  S.set('suno', list);
+  closeModal('suno-modal');
+  renderSuno();
+}
+function deleteSuno(id) {
+  if (!confirm('削除しますか？')) return;
+  S.set('suno', (S.get('suno')||[]).filter(s=>s.id!==id));
+  renderSuno();
+}
+
+// PLAYLISTS
+function renderPlaylists() {
+  const list = S.get('playlists')||[];
+  document.getElementById('playlist-grid').innerHTML = list.map(p=>{
+    const vids = (p.videos||'').split('\n').filter(Boolean);
+    return `<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <div>
+          <div style="font-size:14px;font-weight:700">${p.name}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">${p.desc||''}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-secondary btn-sm" onclick="openPlaylistModal(${p.id})">編集</button>
+          <button class="btn btn-danger btn" onclick="deletePlaylist(${p.id})">削除</button>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px">${vids.length}本の動画</div>
+      ${vids.map(v=>`<div style="font-size:12px;padding:4px 0;border-bottom:1px solid var(--border);color:var(--text)">▸ ${v}</div>`).join('')}
+    </div>`;
+  }).join('');
+}
+function openPlaylistModal(id) {
+  if (id) {
+    const p = (S.get('playlists')||[]).find(p=>p.id===id);
+    if (!p) return;
+    document.getElementById('plm-id').value=id;
+    document.getElementById('plm-name').value=p.name||'';
+    document.getElementById('plm-desc').value=p.desc||'';
+    document.getElementById('plm-videos').value=p.videos||'';
+  } else {
+    document.getElementById('plm-id').value='';
+    ['plm-name','plm-desc','plm-videos'].forEach(f=>document.getElementById(f).value='');
+  }
+  openModal('playlist-modal');
+}
+function savePlaylist() {
+  const id = document.getElementById('plm-id').value;
+  const p = {
+    id: id ? +id : newId(),
+    name: document.getElementById('plm-name').value.trim(),
+    desc: document.getElementById('plm-desc').value.trim(),
+    videos: document.getElementById('plm-videos').value.trim(),
+  };
+  const list = S.get('playlists')||[];
+  if (id) { const idx=list.findIndex(x=>x.id===+id); if(idx>=0)list[idx]=p; }
+  else list.push(p);
+  S.set('playlists', list);
+  closeModal('playlist-modal');
+  renderPlaylists();
+}
+function deletePlaylist(id) {
+  if (!confirm('削除しますか？')) return;
+  S.set('playlists', (S.get('playlists')||[]).filter(p=>p.id!==id));
+  renderPlaylists();
+}
+
+// ANALYTICS
+function renderAnalytics() {
+  const data = S.get('analytics')||[];
+  const last = data[data.length-1]||{};
+  const prev = data[data.length-2]||{};
+  const subsGrowth = last.subs && prev.subs ? last.subs - prev.subs : 0;
+
+  document.getElementById('analytics-stats').innerHTML = `
+    <div class="stat"><div class="stat-val">${last.subs||0}</div><div class="stat-lab">登録者数</div></div>
+    <div class="stat"><div class="stat-val">${subsGrowth>=0?'+':''}${subsGrowth}</div><div class="stat-lab">前回比（登録者）</div></div>
+    <div class="stat"><div class="stat-val">${last.views||0}</div><div class="stat-lab">総視聴回数</div></div>
+    <div class="stat"><div class="stat-val">${(+last.hours||0).toFixed(1)}</div><div class="stat-lab">総再生時間(h)</div></div>
+  `;
+
+  document.getElementById('analytics-body').innerHTML = [...data].reverse().map(r=>`
+    <tr>
+      <td class="mono" style="color:var(--muted)">${r.date}</td>
+      <td class="mono">${r.subs}</td>
+      <td class="mono">${r.views}</td>
+      <td style="font-size:12px;color:var(--muted)">${r.memo||'—'}</td>
+      <td><button class="btn btn-danger btn" onclick="deleteAnalytics(${r.id})">削除</button></td>
+    </tr>`).join('');
+}
+function openAnalyticsModal() {
+  const now = new Date();
+  document.getElementById('am-date').value = now.toISOString().slice(0,10);
+  document.getElementById('am-subs').value='';
+  document.getElementById('am-views').value='';
+  document.getElementById('am-hours').value='';
+  document.getElementById('am-memo').value='';
+  openModal('analytics-modal');
+}
+function saveAnalytics() {
+  const r = {
+    id: newId(),
+    date: document.getElementById('am-date').value,
+    subs: +document.getElementById('am-subs').value||0,
+    views: +document.getElementById('am-views').value||0,
+    hours: +document.getElementById('am-hours').value||0,
+    memo: document.getElementById('am-memo').value.trim(),
+  };
+  const data = S.get('analytics')||[];
+  data.push(r);
+  data.sort((a,b)=>a.date>b.date?1:-1);
+  S.set('analytics', data);
+  closeModal('analytics-modal');
+  renderAnalytics();
+  renderDashboard();
+}
+function deleteAnalytics(id) {
+  S.set('analytics', (S.get('analytics')||[]).filter(r=>r.id!==id));
+  renderAnalytics();
+  renderDashboard();
+}
+
+// UTILS
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(el=>{
+  el.addEventListener('click', e=>{ if(e.target===el) el.classList.remove('open'); });
+});
+
+function copyText(elId, text) {
+  const t = text || document.getElementById(elId).textContent;
+  navigator.clipboard.writeText(t).then(()=>{
+    const toast = document.getElementById('copy-toast');
+    toast.classList.add('show');
+    setTimeout(()=>toast.classList.remove('show'), 2000);
+  });
+}
+
+function escQ(str) {
+  return (str||'').replace(/'/g,"\\'").replace(/\n/g,'\\n');
+}
+
+// INIT
+seedIfEmpty();
+
+// 新規プロンプトの自動追加（未保存の場合のみ）
+(function addNewPrompts() {
+  const newPrompts = [
+    {
+      name: 'Fizzy Honey Lemon Soda 350ml スタイル',
+      style: 'lofi, city pop, Japanese summer, bubbly, refreshing, warm synth, soft guitar, upbeat, nostalgic, kawaii, dreamy vocals, 90 bpm, analog warmth, sweet melody, bossa nova influence',
+      lyrics: '冷たいソーダ 手に持って\n夕暮れの坂道 歩いてる\nレモンの香り 風に乗って\nあの日の夏が よみがえる',
+      rating: '★★★',
+      memo: '夏の午後〜夕方、シティポップ×ローファイ。炭酸のような弾ける軽さ、BPM85〜95',
+    },
+    {
+      name: 'しゃろう 2:23AM スタイル',
+      style: 'lofi hip hop, jazzy piano, late night, melancholic, introspective, vinyl crackle, soft drums, mellow bass, dreamy, emotional, 78 bpm, Japanese aesthetic, wabi-sabi, city at night',
+      lyrics: '[Instrumental]',
+      rating: '★★★',
+      memo: '深夜2〜4時の雰囲気、マイナー系ジャズコード、ゆるいスウィング感。しゃろうスタイル',
+    },
+  ];
+  const list = S.get('suno') || [];
+  let changed = false;
+  newPrompts.forEach(p => {
+    if (!list.find(x => x.name === p.name)) {
+      list.push({ id: newId(), ...p });
+      changed = true;
+    }
+  });
+  if (changed) S.set('suno', list);
+})();
+
+initCal();
+render();
+</script>
+</body>
+</html>
